@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أرشيف CityNet الفضي - منطقة الغاب</title>
+    <style>
+        body {
+            background-color: #e0e0e0; /* لون فضي فاتح للخلفية */
+            color: #444;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        /* واجهة تسجيل الدخول ثلاثية الأبعاد */
+        #loginOverlay {
+            background: #e0e0e0;
+            padding: 40px;
+            border-radius: 30px;
+            box-shadow: 10px 10px 20px #bebebe, -10px -10px 20px #ffffff;
+            text-align: center;
+            width: 320px;
+            margin-top: 10vh;
+            position: absolute;
+            z-index: 100;
+        }
+
+        #mainContent { display: none; width: 100%; max-width: 850px; padding: 20px; }
+
+        /* تأثير البروز ثلاثي الأبعاد للحقول */
+        .input-3d {
+            width: 100%;
+            padding: 15px;
+            margin: 15px 0;
+            background: #e0e0e0;
+            border: none;
+            border-radius: 15px;
+            box-shadow: inset 6px 6px 12px #bebebe, inset -6px -6px 12px #ffffff;
+            color: #333;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        /* الأزرار ثلاثية الأبعاد */
+        .btn-3d {
+            width: 100%;
+            padding: 15px;
+            margin-top: 10px;
+            background: #e0e0e0;
+            border: none;
+            border-radius: 15px;
+            box-shadow: 6px 6px 12px #bebebe, -6px -6px 12px #ffffff;
+            color: #444;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-3d:active {
+            box-shadow: inset 4px 4px 8px #bebebe, inset -4px -4px 8px #ffffff;
+            transform: scale(0.98);
+        }
+
+        header {
+            background: #e0e0e0;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 8px 8px 16px #bebebe, -8px -8px 16px #ffffff;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .form-container {
+            background: #e0e0e0;
+            padding: 25px;
+            border-radius: 25px;
+            box-shadow: 8px 8px 16px #bebebe, -8px -8px 16px #ffffff;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .full-width { grid-column: span 2; }
+
+        /* بطاقات الضبوط المذخورة */
+        .record-card {
+            background: #e0e0e0;
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 6px 6px 12px #bebebe, -6px -6px 12px #ffffff;
+            border-right: 8px solid #a8a8a8;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            font-size: 0.9rem;
+            margin: 15px 0;
+        }
+
+        .summary-box {
+            background: #e0e0e0;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: inset 4px 4px 8px #bebebe, inset -4px -4px 8px #ffffff;
+            line-height: 1.6;
+        }
+
+        label {
+            font-weight: bold;
+            color: #666;
+            margin-right: 5px;
+        }
+
+        h1, h2 { color: #555; text-shadow: 1px 1px 2px #fff; }
+    </style>
+</head>
+<body>
+
+<div id="loginOverlay">
+    <h2 style="letter-spacing: 2px;">CITYNET</h2>
+    <p style="font-size: 0.8rem; color: #888;">نظام أرشفة منطقة الغاب</p>
+    <input type="text" id="username" class="input-3d" placeholder="اسم المستخدم">
+    <input type="password" id="password" class="input-3d" placeholder="كلمة السر">
+    <button class="btn-3d" onclick="checkLogin()">دخول آمن</button>
+</div>
+
+<div id="mainContent">
+    <header>
+        <h1>سجل ضبوط منطقة الغاب</h1>
+        <p style="color: #888; font-size: 0.9rem;">إدارة البيانات المركزية - الإصدار الفضي</p>
+    </header>
+
+    <div class="form-container">
+        <div>
+            <label>رقم التسلسل</label>
+            <input type="number" id="seqNo" class="input-3d" placeholder="1">
+        </div>
+        <div>
+            <label>القسم المنظم</label>
+            <select id="deptName" class="input-3d">
+                <option value="قسم السقيلبية">قسم السقيلبية</option>
+                <option value="قسم آفاميا">قسم آفاميا</option>
+                <option value="قسم الزيارة">قسم الزيارة</option>
+                <option value="قسم سلحب">قسم سلحب</option>
+                <option value="قسم عين الكروم">قسم عين الكروم</option>
+                <option value="قسم شطحة">قسم شطحة</option>
+            </select>
+        </div>
+        <div>
+            <label>رقم الضبط</label>
+            <input type="number" id="reportNo" class="input-3d" placeholder="0">
+        </div>
+        <div>
+            <label>تاريخ الضبط</label>
+            <input type="date" id="reportDate" class="input-3d">
+        </div>
+        <div class="full-width">
+            <label>خلاصة الضبط</label>
+            <textarea id="summary" rows="3" class="input-3d" placeholder="اكتب تفاصيل الضبط هنا..."></textarea>
+        </div>
+        <button class="btn-3d full-width" onclick="saveRecord()" style="color: #2e7d32;">حفظ الضبط في الأرشيف الدائم</button>
+    </div>
+
+    <div id="recordsContainer">
+        </div>
+</div>
+
+<script>
+    function checkLogin() {
+        const u = document.getElementById('username').value;
+        const p = document.getElementById('password').value;
+        if(u === "alghab" && p === "alghab2026") {
+            document.getElementById('loginOverlay').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+        } else {
+            alert("بيانات الدخول خاطئة!");
+        }
+    }
+
+    function saveRecord() {
+        const seq = document.getElementById('seqNo').value;
+        const dept = document.getElementById('deptName').value;
+        const rNo = document.getElementById('reportNo').value;
+        const rDate = document.getElementById('reportDate').value;
+        const summary = document.getElementById('summary').value;
+        const container = document.getElementById('recordsContainer');
+
+        if(!rDate || !summary) {
+            alert("يرجى إكمال البيانات الأساسية");
+            return;
+        }
+
+        const card = document.createElement('div');
+        card.className = 'record-card';
+        card.innerHTML = `
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                <h3 style="margin:0; color:#444;">ضبط تسلسل #${seq || '0'}</h3>
+                <span style="color:#888; font-size:0.8rem;">${new Date().toLocaleDateString('ar-SY')}</span>
+            </div>
+            <div class="details-grid">
+                <div><b>القسم:</b> ${dept}</div>
+                <div><b>رقم الضبط:</b> ${rNo || '0'}</div>
+                <div><b>التاريخ:</b> ${rDate}</div>
+            </div>
+            <div class="summary-box">
+                <b>الخلاصة:</b><br>${summary}
+            </div>
+        `;
+
+        container.prepend(card);
+
+        // تصفير وتحديث
+        document.getElementById('summary').value = "";
+        if(seq) document.getElementById('seqNo').value = parseInt(seq) + 1;
+    }
+</script>
+
+</body>
+</html>
