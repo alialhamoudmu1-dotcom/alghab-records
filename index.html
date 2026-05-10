@@ -3,235 +3,176 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>سجل ضبوط مديرية الغاب</title>
+    <title>مديرية أمن الغاب - النظام المركزي</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
+        :root { --bg-grey: #e0e0e0; --main-blue: #003087; --main-green: #0b4a0b; }
+        body { background-color: #000; color: white; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; display: flex; justify-content: center; }
+        .container { width: 100%; max-width: 450px; min-height: 100vh; position: relative; }
+        .screen { display: none; padding: 20px; box-sizing: border-box; }
+        .active { display: block; }
 
-        body {
-            background-color: #e0e0e0;
-            font-family: 'Cairo', sans-serif;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
+        /* التصميم العلوي والشعار */
+        .header-box { background: #1a1a1a; padding: 25px; border-radius: 25px; border-bottom: 4px solid #4a3b10; text-align: center; margin-bottom: 25px; }
+        .eagle-logo { width: 100px; display: block; margin: 0 auto 15px; filter: drop-shadow(0 0 8px gold); }
+        
+        /* الحقول اليدوية بأسلوب Neumorphism */
+        .input-group { background: var(--bg-grey); border: none; border-radius: 15px; box-shadow: inset 4px 4px 8px #bebebe, inset -4px -4px 8px #ffffff; padding: 15px; margin-bottom: 12px; width: 100%; box-sizing: border-box; color: #333; }
+        input, textarea { background: transparent; border: none; outline: none; width: 100%; font-size: 16px; font-family: inherit; color: #333; }
+        input::placeholder, textarea::placeholder { color: #888; }
 
-        .glass-panel {
-            background: linear-gradient(145deg, #f0f0f0, #cacaca);
-            box-shadow: 20px 20px 60px #bebebe, -20px -20px 60px #ffffff;
-            border-radius: 30px;
-            padding: 25px;
-            width: 90%;
-            max-width: 500px;
-            text-align: center;
-        }
-
-        #clock { font-size: 32px; font-weight: bold; color: #444; margin-bottom: 20px; }
-
-        input, select, textarea {
-            width: 100%; padding: 12px; margin: 10px 0; border: none; border-radius: 12px;
-            background: #e0e0e0; box-shadow: inset 4px 4px 8px #bebebe, inset -4px -4px 8px #ffffff;
-            font-family: 'Cairo', sans-serif; outline: none; box-sizing: border-box;
-        }
-
-        .hidden-field { display: none; border-right: 4px solid #2e7d32; }
-
-        button {
-            width: 100%; padding: 15px; border: none; border-radius: 50px;
-            background: linear-gradient(145deg, #f0f0f0, #cacaca);
-            box-shadow: 5px 5px 10px #bebebe, -5px -5px 10px #ffffff;
-            cursor: pointer; font-weight: bold; color: #555; transition: 0.2s;
-            margin-top: 10px;
-        }
-
-        button:active { box-shadow: inset 3px 3px 7px #bebebe, inset -3px -3px 7px #ffffff; }
-
-        .btn-save { background: #2e7d32; color: white; }
-
-        /* سجل المحفوظات */
-        .records-container {
-            margin-top: 25px;
-            text-align: right;
-            max-height: 400px;
-            overflow-y: auto;
-            padding: 5px;
-        }
-
-        .record-card {
-            background: #e0e0e0; padding: 15px; border-radius: 20px; margin-bottom: 15px;
-            box-shadow: 6px 6px 12px #bebebe, -6px -6px 12px #ffffff;
-            border-right: 8px solid #2e7d32;
-        }
-
-        .record-header { display: flex; justify-content: space-between; font-weight: bold; }
-        .record-actions { display: flex; gap: 10px; margin-top: 10px; }
-        .btn-action { padding: 5px; font-size: 12px; flex: 1; }
-
-        /* Modal */
-        #modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.3); display: none; justify-content: center; align-items: center; z-index: 1000;
-        }
-        .modal { background: #e0e0e0; padding: 25px; border-radius: 25px; width: 85%; max-width: 450px; max-height: 90vh; overflow-y: auto; }
-
-        #main-ui { display: none; }
+        /* الأزرار */
+        .btn { width: 100%; padding: 16px; border-radius: 15px; border: none; color: white; font-weight: bold; font-size: 17px; cursor: pointer; margin-bottom: 15px; transition: 0.3s; }
+        .btn-green { background-color: var(--main-green); }
+        .btn-blue { background-color: var(--main-blue); }
+        
+        /* كروت عرض البيانات */
+        .record-card { background: #fff; padding: 15px; border-radius: 15px; margin-bottom: 10px; color: #333; border-right: 5px solid var(--main-blue); position: relative; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); text-align: right; }
+        .edit-btn { position: absolute; left: 10px; top: 10px; background: #ff9800; color: white; padding: 5px 10px; border-radius: 8px; font-size: 12px; border: none; cursor: pointer; font-weight: bold; }
+        
+        .sync-status { font-size: 10px; color: #76c893; display: block; margin-top: 5px; }
     </style>
 </head>
 <body>
 
-    <div id="login-ui" class="glass-panel">
-        <div id="clock">00:00:00</div>
-        <input type="password" id="passCode" placeholder="كلمة المرور">
-        <button onclick="login()">دخول للنظام</button>
-    </div>
-
-    <div id="main-ui" class="glass-panel">
-        <h2 style="margin:0 0 15px 0;">سجل المحفوظات</h2>
-        <button class="btn-save" onclick="openModal()">+ إضافة ضبط جديد</button>
-        <input type="text" id="searchBox" onkeyup="search()" placeholder="بحث في السجلات...">
-        <div id="displayArea" class="records-container"></div>
-    </div>
-
-    <div id="modal-overlay">
-        <div class="modal">
-            <h3 id="mTitle">إضافة ضبط جديد</h3>
-            <input type="hidden" id="editID">
-            
-            <select id="mSec">
-                <option>قسم السقيلبية</option>
-                <option>قسم الزيارة</option>
-                <option>قسم آفاميا</option>
-                <option>قسم شطحة</option>
-                <option>قسم عين الكروم</option>
-                <option>قسم سلحب</option>
-            </select>
-
-            <input type="text" id="mNum" placeholder="رقم الضبط">
-            <input type="text" id="mDate" placeholder="التاريخ (يدوي)">
-            
-            <select id="mType" onchange="toggleManual('mType', 'mManualType')">
-                <option>ضبط تمويني</option>
-                <option>ضبط حراجي</option>
-                <option>ضبط مخالفة بناء</option>
-                <option>ضبط سرقة كهرباء</option>
-                <option>ضبط سلب</option>
-                <option>ضبط قتل</option>
-                <option value="other">أخرى (كتابة يدوية)</option>
-            </select>
-            <input type="text" id="mManualType" class="hidden-field" placeholder="اكتب نوع الضبط هنا...">
-
-            <select id="mReason" onchange="toggleManual('mReason', 'mManualReason')">
-                <option>معروض</option>
-                <option>مذكرة إحضار</option>
-                <option value="other">غير ذلك (كتابة يدوية)</option>
-            </select>
-            <input type="text" id="mManualReason" class="hidden-field" placeholder="اكتب سبب التنظيم هنا...">
-
-            <textarea id="mSum" rows="3" placeholder="الخلاصة..."></textarea>
-            
-            <button class="btn-save" onclick="save()">حفظ البيانات</button>
-            <button onclick="closeModal()" style="background:none; box-shadow:none; color:#888;">إلغاء</button>
+<div class="container">
+    
+    <div id="login-screen" class="screen active">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Coat_of_arms_of_Syria.svg/1200px-Coat_of_arms_of_Syria.svg.png" class="eagle-logo" style="margin-top: 60px;">
+        <div style="background:#1a1a1a; padding:30px; border-radius:25px; text-align:center;">
+            <h2>مديرية أمن الغاب</h2>
+            <p style="color:#888;">نظام الأرشفة المركزي</p>
+            <input type="password" id="login-pass" class="input-group" style="background:#222; color:white; text-align:center;" placeholder="كلمة المرور">
+            <button class="btn btn-blue" onclick="checkLogin()">دخول للنظام</button>
         </div>
     </div>
 
-    <script>
-        let db = JSON.parse(localStorage.getItem('alghab_records_v3')) || [];
+    <div id="main-screen" class="screen">
+        <div class="header-box">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Coat_of_arms_of_Syria.svg/1200px-Coat_of_arms_of_Syria.svg.png" class="eagle-logo" style="width:70px;">
+            <h3 style="margin:5px 0;">الجمهورية العربية السورية</h3>
+            <h4 style="color:#76c893; margin:5px 0;">مديرية أمن الغاب</h4>
+            <span class="sync-status">● متصل سحابياً - مزامنة لحظية للجميع</span>
+        </div>
+        <button class="btn btn-green" onclick="openForm('records')">+ إضافة ضبط جديد</button>
+        <button class="btn btn-blue" onclick="openForm('justice')">+ إضافة للسجل العدلي</button>
+        <div style="display:flex; gap:10px;">
+            <button class="btn" style="background:#333; flex:1;" onclick="viewData('justice')">السجل العدلي</button>
+            <button class="btn" style="background:#003a8c; flex:1;" onclick="viewData('records')">سجل الضبوط</button>
+        </div>
+        <div style="text-align:center; font-size:12px; margin-top:20px; opacity:0.6;">إشراف: مديرية أمن الغاب | 2026</div>
+    </div>
 
-        function login() {
-            if(document.getElementById('passCode').value === 'alghab2026') {
-                document.getElementById('login-ui').style.display = 'none';
-                document.getElementById('main-ui').style.display = 'block';
-                render(db);
-            } else { alert('خطأ!'); }
+    <div id="form-screen" class="screen" style="background:var(--bg-grey); color:#333;">
+        <h2 id="form-title" style="text-align:center; margin-bottom:20px;"></h2>
+        <div id="fields-area"></div>
+        <button class="btn btn-green" id="submit-btn">حفظ ومزامنة تلقائية</button>
+        <button class="btn" style="background:#888;" onclick="goHome()">إلغاء</button>
+    </div>
+
+    <div id="view-screen" class="screen" style="background:var(--bg-grey); color:#333;">
+        <h2 id="view-title" style="text-align:center;"></h2>
+        <div style="position: sticky; top: 0; background: var(--bg-grey); padding: 10px 0; z-index: 10;">
+            <input type="text" id="search-box" class="input-group" onkeyup="liveSearch()" placeholder="بحث دقيق (اسم، رقم، نوع، تاريخ)...">
+        </div>
+        <div id="data-list"></div>
+        <button class="btn" style="background:#333; margin-top:20px;" onclick="goHome()">عودة للرئيسية</button>
+    </div>
+
+</div>
+
+<script>
+    // إعدادات Firebase Cloud - استبدل الرابط برابط مشروعك الفعلي
+    const firebaseConfig = { databaseURL: "https://ahmed-safo-default-rtdb.firebaseio.com/" };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    let currentPath = "";
+    let dataCache = [];
+    let editKey = null;
+
+    function checkLogin() {
+        if(document.getElementById('login-pass').value === "alghab2026") showScreen('main-screen');
+        else alert("كلمة المرور خاطئة");
+    }
+
+    function openForm(path, data = null, key = null) {
+        currentPath = path;
+        editKey = key;
+        showScreen('form-screen');
+        const area = document.getElementById('fields-area');
+        document.getElementById('form-title').innerText = (key ? "تعديل " : "إضافة ") + (path === 'records' ? "ضبط" : "مذكرة");
+
+        if(path === 'records') {
+            area.innerHTML = `
+                <input type="text" id="v1" class="input-group" placeholder="القسم (يدوي)" value="${data?data.v1:''}">
+                <input type="text" id="v2" class="input-group" placeholder="رقم الضبط" value="${data?data.v2:''}">
+                <input type="text" id="v3" class="input-group" placeholder="التاريخ" value="${data?data.v3:''}">
+                <input type="text" id="v4" class="input-group" placeholder="نوع الضبط" value="${data?data.v4:''}">
+                <textarea id="v5" class="input-group" style="height:100px;" placeholder="الخلاصة...">${data?data.v5:''}</textarea>`;
+        } else {
+            area.innerHTML = `
+                <input type="text" id="v1" class="input-group" placeholder="الاسم الثلاثي" value="${data?data.v1:''}">
+                <input type="text" id="v2" class="input-group" placeholder="العنوان / المسكن" value="${data?data.v2:''}">
+                <input type="text" id="v3" class="input-group" placeholder="اسم الأم" value="${data?data.v3:''}">
+                <input type="text" id="v4" class="input-group" placeholder="رقم المذكرة" value="${data?data.v4:''}">
+                <input type="text" id="v6" class="input-group" placeholder="نوع المذكرة (إحضار، توقيف...)" value="${data?data.v6||'':''}">
+                <input type="text" id="v7" class="input-group" placeholder="تاريخ المذكرة" value="${data?data.v7||'':''}">
+                <textarea id="v5" class="input-group" style="height:100px;" placeholder="ملاحظات المذكرة...">${data?data.v5:''}</textarea>`;
         }
+        document.getElementById('submit-btn').onclick = saveToCloud;
+    }
 
-        setInterval(() => {
-            document.getElementById('clock').textContent = new Date().toLocaleTimeString('ar-EG');
-        }, 1000);
+    function saveToCloud() {
+        const payload = {
+            v1: document.getElementById('v1').value, v2: document.getElementById('v2').value,
+            v3: document.getElementById('v3').value, v4: document.getElementById('v4').value,
+            v5: document.getElementById('v5').value,
+            v6: document.getElementById('v6') ? document.getElementById('v6').value : "",
+            v7: document.getElementById('v7') ? document.getElementById('v7').value : "",
+            ts: Date.now()
+        };
+        const ref = db.ref(currentPath);
+        const action = editKey ? ref.child(editKey).update(payload) : ref.push(payload);
+        action.then(() => { alert("تم الحفظ والمزامنة مع جميع الأجهزة"); goHome(); });
+    }
 
-        function openModal() { document.getElementById('modal-overlay').style.display = 'flex'; }
-        function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; resetForm(); }
+    function viewData(path) {
+        currentPath = path;
+        showScreen('view-screen');
+        document.getElementById('view-title').innerText = path === 'records' ? "سجل الضبوط" : "السجل العدلي";
+        db.ref(path).on('value', snap => {
+            dataCache = [];
+            snap.forEach(c => { dataCache.push({key: c.key, ...c.val()}); });
+            renderList(dataCache);
+        });
+    }
 
-        function toggleManual(selID, inpID) {
-            document.getElementById(inpID).style.display = (document.getElementById(selID).value === 'other') ? 'block' : 'none';
-        }
+    function renderList(list) {
+        document.getElementById('data-list').innerHTML = list.reverse().map(item => `
+            <div class="record-card">
+                <button class="edit-btn" onclick="openForm('${currentPath}', ${JSON.stringify(item).replace(/"/g, '&quot;')}, '${item.key}')">تعديل</button>
+                <b>${item.v1} - رقم: ${item.v4 || item.v2}</b><br>
+                <small>${item.v6 ? 'نوع: '+item.v6 : ''} ${item.v7 ? '| تاريخ: '+item.v7 : ''}</small>
+                <p style="font-size:13px; color:#444; margin:5px 0;">${item.v5}</p>
+            </div>
+        `).join('');
+    }
 
-        function save() {
-            let type = document.getElementById('mType').value === 'other' ? document.getElementById('mManualType').value : document.getElementById('mType').value;
-            let reason = document.getElementById('mReason').value === 'other' ? document.getElementById('mManualReason').value : document.getElementById('mReason').value;
+    function liveSearch() {
+        const term = document.getElementById('search-box').value.toLowerCase();
+        const filtered = dataCache.filter(i => Object.values(i).some(v => String(v).toLowerCase().includes(term)));
+        renderList(filtered);
+    }
 
-            const entry = {
-                id: document.getElementById('editID').value || Date.now(),
-                section: document.getElementById('mSec').value,
-                num: document.getElementById('mNum').value,
-                date: document.getElementById('mDate').value,
-                type: type,
-                reason: reason,
-                summary: document.getElementById('mSum').value
-            };
-
-            const index = db.findIndex(i => i.id == entry.id);
-            if(index > -1) db[index] = entry;
-            else db.push(entry);
-
-            localStorage.setItem('alghab_records_v3', JSON.stringify(db));
-            render(db);
-            closeModal();
-        }
-
-        function render(dataList) {
-            const area = document.getElementById('displayArea');
-            area.innerHTML = dataList.length === 0 ? '<p style="color:#999">لا يوجد محفوظات</p>' : 
-            dataList.map(item => `
-                <div class="record-card">
-                    <div class="record-header">
-                        <span>رقم: ${item.num}</span>
-                        <span style="color:#2e7d32">${item.type}</span>
-                    </div>
-                    <div style="font-size:12px; color:#888; margin:5px 0;">
-                        ${item.section} | ${item.date} | السبب: ${item.reason}
-                    </div>
-                    <p style="font-size:14px; color:#444; margin:5px 0;">${item.summary}</p>
-                    <div class="record-actions">
-                        <button class="btn-action" style="color:#f0ad4e" onclick="edit(${item.id})">تعديل</button>
-                        <button class="btn-action" style="color:#d9534f" onclick="del(${item.id})">حذف</button>
-                    </div>
-                </div>
-            `).reverse().join('');
-        }
-
-        function del(id) {
-            if(confirm('هل أنت متأكد من الحذف؟')) {
-                db = db.filter(i => i.id != id);
-                localStorage.setItem('alghab_records_v3', JSON.stringify(db));
-                render(db);
-            }
-        }
-
-        function edit(id) {
-            const item = db.find(i => i.id == id);
-            document.getElementById('editID').value = item.id;
-            document.getElementById('mNum').value = item.num;
-            document.getElementById('mSum').value = item.summary;
-            document.getElementById('mDate').value = item.date;
-            document.getElementById('mSec').value = item.section;
-            document.getElementById('mTitle').textContent = "تعديل الضبط";
-            openModal();
-        }
-
-        function search() {
-            const q = document.getElementById('searchBox').value.toLowerCase();
-            const f = db.filter(i => i.num.includes(q) || i.summary.toLowerCase().includes(q) || i.type.toLowerCase().includes(q));
-            render(f);
-        }
-
-        function resetForm() {
-            document.getElementById('editID').value = '';
-            document.getElementById('mNum').value = '';
-            document.getElementById('mSum').value = '';
-            document.getElementById('mTitle').textContent = "إضافة ضبط جديد";
-        }
-    </script>
+    function showScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        document.body.style.backgroundColor = (id==='main-screen'||id==='login-screen') ? "#000" : "var(--bg-grey)";
+    }
+    function goHome() { showScreen('main-screen'); }
+</script>
 </body>
 </html>
