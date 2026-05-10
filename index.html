@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+پ<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -173,6 +173,52 @@
         document.body.style.backgroundColor = (id==='main-screen'||id==='login-screen') ? "#000" : "var(--bg-grey)";
     }
     function goHome() { showScreen('main-screen'); }
+
+
 </script>
+    <script type="module">
+  // استدعاء مكتبات Firebase من الإنترنت مباشرة
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+  import { getDatabase, ref, push, set, onValue } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-database.js";
+
+  // إعدادات مشروعك الخاصة (Config)
+  const firebaseConfig = {
+    apiKey: "AIzaSyAuv0Uuq_nRbRMKcBp27TGEGfLC1p_tafU",
+    authDomain: "alghab-records.firebaseapp.com",
+    projectId: "alghab-records",
+    databaseURL: "https://alghab-records-default-rtdb.firebaseio.com",
+    storageBucket: "alghab-records.firebasestorage.app",
+    messagingSenderId: "730276364031",
+    appId: "1:730276364031:web:01460dd13b3ac0da6e96ca"
+  };
+
+  // تشغيل Firebase
+  const app = initializeApp(firebaseConfig);
+  const database = getDatabase(app);
+
+  // وظيفة إرسال البيانات للسحابة (الكلود)
+  window.saveToCloud = function(type) {
+    const recordsRef = ref(database, 'records');
+    const newRecordRef = push(recordsRef);
+    
+    set(newRecordRef, {
+      title: type,
+      time: new Date().toLocaleString('ar-SY'),
+      status: "نشط"
+    }).then(() => {
+      alert("تم الحفظ في الكلود بنجاح! ✅");
+    }).catch((error) => {
+      alert("خطأ: تأكد من تفعيل Rules في Firebase");
+    });
+  }
+
+  // كود لجلب البيانات وعرضها (اختياري)
+  const recordsRef = ref(database, 'records');
+  onValue(recordsRef, (snapshot) => {
+    const data = snapshot.val();
+    console.log("البيانات في السحابة:", data);
+  });
+</script>
+
 </body>
 </html>
