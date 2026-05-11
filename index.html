@@ -1,4 +1,4 @@
-پ<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -8,217 +8,118 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
     <style>
-        :root { --bg-grey: #e0e0e0; --main-blue: #003087; --main-green: #0b4a0b; }
+        :root { --bg-gray: #e0e0e0; --main-blue: #003a8c; --main-green: #0b4a0b; }
         body { background-color: #000; color: white; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; display: flex; justify-content: center; }
         .container { width: 100%; max-width: 450px; min-height: 100vh; position: relative; }
         .screen { display: none; padding: 20px; box-sizing: border-box; }
         .active { display: block; }
-
-        /* التصميم العلوي والشعار */
-        .header-box { background: #1a1a1a; padding: 25px; border-radius: 25px; border-bottom: 4px solid #4a3b10; text-align: center; margin-bottom: 25px; }
-        .eagle-logo { width: 100px; display: block; margin: 0 auto 15px; filter: drop-shadow(0 0 8px gold); }
-        
-        /* الحقول اليدوية بأسلوب Neumorphism */
-        .input-group { background: var(--bg-grey); border: none; border-radius: 15px; box-shadow: inset 4px 4px 8px #bebebe, inset -4px -4px 8px #ffffff; padding: 15px; margin-bottom: 12px; width: 100%; box-sizing: border-box; color: #333; }
-        input, textarea { background: transparent; border: none; outline: none; width: 100%; font-size: 16px; font-family: inherit; color: #333; }
-        input::placeholder, textarea::placeholder { color: #888; }
-
-        /* الأزرار */
-        .btn { width: 100%; padding: 16px; border-radius: 15px; border: none; color: white; font-weight: bold; font-size: 17px; cursor: pointer; margin-bottom: 15px; transition: 0.3s; }
+        .header-box { background: #1a1a1a; padding: 25px; border-radius: 25px; border-bottom: 4px solid #4a3b10; text-align: center; margin-bottom: 20px; }
+        .eagle-logo { width: 100px; padding: 8px; margin: 0 auto 15px; filter: drop-shadow(0 0 8px gold); }
+        .input-group { background: var(--bg-gray); border: none; border-radius: 15px; box-shadow: inset 4px 4px 8px #bebebe, inset -4px -4px 8px #ffffff; padding: 16px; width: 100%; outline: none; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; }
+        .btn { width: 100%; padding: 16px; border-radius: 15px; border: none; color: white; font-weight: bold; font-size: 17px; cursor: pointer; margin-bottom: 10px; }
         .btn-green { background-color: var(--main-green); }
         .btn-blue { background-color: var(--main-blue); }
-        
-        /* كروت عرض البيانات */
-        .record-card { background: #fff; padding: 15px; border-radius: 15px; margin-bottom: 10px; color: #333; border-right: 5px solid var(--main-blue); position: relative; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); text-align: right; }
-        .edit-btn { position: absolute; left: 10px; top: 10px; background: #ff9800; color: white; padding: 5px 10px; border-radius: 8px; font-size: 12px; border: none; cursor: pointer; font-weight: bold; }
-        
+        .record-card { background: #fff; padding: 15px; border-radius: 15px; margin-bottom: 10px; color: #333; border-right: 5px solid var(--main-blue); position: relative; text-align: right; }
+        .edit-btn { position: absolute; left: 10px; top: 10px; background: #ff9800; color: white; padding: 5px 10px; border-radius: 8px; font-size: 12px; }
         .sync-status { font-size: 10px; color: #76c893; display: block; margin-top: 5px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    
     <div id="login-screen" class="screen active">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Coat_of_arms_of_Syria.svg/1200px-Coat_of_arms_of_Syria.svg.png" class="eagle-logo" style="margin-top: 60px;">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Coat_of_arms_of_Syria.svg/1200px-Coat_of_arms_of_Syria.svg.png" class="eagle-logo">
         <div style="background:#1a1a1a; padding:30px; border-radius:25px; text-align:center;">
             <h2>مديرية أمن الغاب</h2>
             <p style="color:#888;">نظام الأرشفة المركزي</p>
-            <input type="password" id="login-pass" class="input-group" style="background:#222; color:white; text-align:center;" placeholder="كلمة المرور">
+            <input type="password" id="login-pass" class="input-group" style="background:#222; color:white; text-align:center;" placeholder="أدخل كلمة المرور">
             <button class="btn btn-blue" onclick="checkLogin()">دخول للنظام</button>
         </div>
     </div>
 
     <div id="main-screen" class="screen">
         <div class="header-box">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Coat_of_arms_of_Syria.svg/1200px-Coat_of_arms_of_Syria.svg.png" class="eagle-logo" style="width:70px;">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Coat_of_arms_of_Syria.svg/1200px-Coat_of_arms_of_Syria.svg.png" style="width:70px;">
             <h3 style="margin:5px 0;">الجمهورية العربية السورية</h3>
             <h4 style="color:#76c893; margin:5px 0;">مديرية أمن الغاب</h4>
-            <span class="sync-status">● متصل سحابياً - مزامنة لحظية للجميع</span>
+            <span class="sync-status">● متصل سحابياً - مزامنة لحظية</span>
         </div>
-        <button class="btn btn-green" onclick="openForm('records')">+ إضافة ضبط جديد</button>
-        <button class="btn btn-blue" onclick="openForm('justice')">+ إضافة للسجل العدلي</button>
-        <div style="display:flex; gap:10px;">
+        <button class="btn btn-green" onclick="showForm('ضبط جديد')"> + إضافة ضبط جديد </button>
+        <button class="btn btn-blue" onclick="showForm('سجل عدلي')"> إضافة للسجل العدلي </button>
+        <div style="display:flex; gap:10px; margin-top:20px;">
             <button class="btn" style="background:#333; flex:1;" onclick="viewData('justice')">السجل العدلي</button>
             <button class="btn" style="background:#003a8c; flex:1;" onclick="viewData('records')">سجل الضبوط</button>
         </div>
-        <div style="text-align:center; font-size:12px; margin-top:20px; opacity:0.6;">إشراف: مديرية أمن الغاب | 2026</div>
     </div>
 
-    <div id="form-screen" class="screen" style="background:var(--bg-grey); color:#333;">
-        <h2 id="form-title" style="text-align:center; margin-bottom:20px;"></h2>
-        <div id="fields-area"></div>
-        <button class="btn btn-green" id="submit-btn">حفظ ومزامنة تلقائية</button>
+    <div id="form-screen" class="screen" style="background:var(--bg-gray); color:#333;">
+        <h2 id="form-title" style="text-align:center;"></h2>
+        <div id="fields-area">
+            <input type="text" id="f1" class="input-group" placeholder="الاسم الكامل">
+            <input type="text" id="f2" class="input-group" placeholder="اسم الأب">
+            <input type="text" id="f3" class="input-group" placeholder="الرقم الوطني / الهوية">
+            <input type="text" id="f4" class="input-group" placeholder="التهمة / نوع الضبط">
+            <textarea id="f5" class="input-group" style="height:100px" placeholder="تفاصيل إضافية..."></textarea>
+            <input type="date" id="f6" class="input-group">
+        </div>
+        <button class="btn btn-green" onclick="saveToCloud()">حفظ ومزامنة تلقائياً</button>
         <button class="btn" style="background:#888;" onclick="goHome()">إلغاء</button>
     </div>
 
-    <div id="view-screen" class="screen" style="background:var(--bg-grey); color:#333;">
+    <div id="view-screen" class="screen" style="background:var(--bg-gray); color:#333;">
         <h2 id="view-title" style="text-align:center;"></h2>
-        <div style="position: sticky; top: 0; background: var(--bg-grey); padding: 10px 0; z-index: 10;">
-            <input type="text" id="search-box" class="input-group" onkeyup="liveSearch()" placeholder="بحث دقيق (اسم، رقم، نوع، تاريخ)...">
-        </div>
+        <input type="text" id="search-box" class="input-group" onkeyup="liveSearch()" placeholder="بحث سريع...">
         <div id="data-list"></div>
-        <button class="btn" style="background:#333; margin-top:20px;" onclick="goHome()">عودة للرئيسية</button>
+        <button class="btn" style="background:#333; margin-top:20px;" onclick="goHome()">عودة</button>
     </div>
-
 </div>
 
 <script>
-    // إعدادات Firebase Cloud - استبدل الرابط برابط مشروعك الفعلي
     const firebaseConfig = { databaseURL: "https://ahmed-safo-default-rtdb.firebaseio.com/" };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
+    let currentPath = "", dataCache = [], editKey = null;
 
-    let currentPath = "";
-    let dataCache = [];
-    let editKey = null;
-
-    function checkLogin() {
-        if(document.getElementById('login-pass').value === "alghab2026") showScreen('main-screen');
-        else alert("كلمة المرور خاطئة");
-    }
-
-    function openForm(path, data = null, key = null) {
-        currentPath = path;
-        editKey = key;
-        showScreen('form-screen');
-        const area = document.getElementById('fields-area');
-        document.getElementById('form-title').innerText = (key ? "تعديل " : "إضافة ") + (path === 'records' ? "ضبط" : "مذكرة");
-
-        if(path === 'records') {
-            area.innerHTML = `
-                <input type="text" id="v1" class="input-group" placeholder="القسم (يدوي)" value="${data?data.v1:''}">
-                <input type="text" id="v2" class="input-group" placeholder="رقم الضبط" value="${data?data.v2:''}">
-                <input type="text" id="v3" class="input-group" placeholder="التاريخ" value="${data?data.v3:''}">
-                <input type="text" id="v4" class="input-group" placeholder="نوع الضبط" value="${data?data.v4:''}">
-                <textarea id="v5" class="input-group" style="height:100px;" placeholder="الخلاصة...">${data?data.v5:''}</textarea>`;
-        } else {
-            area.innerHTML = `
-                <input type="text" id="v1" class="input-group" placeholder="الاسم الثلاثي" value="${data?data.v1:''}">
-                <input type="text" id="v2" class="input-group" placeholder="العنوان / المسكن" value="${data?data.v2:''}">
-                <input type="text" id="v3" class="input-group" placeholder="اسم الأم" value="${data?data.v3:''}">
-                <input type="text" id="v4" class="input-group" placeholder="رقم المذكرة" value="${data?data.v4:''}">
-                <input type="text" id="v6" class="input-group" placeholder="نوع المذكرة (إحضار، توقيف...)" value="${data?data.v6||'':''}">
-                <input type="text" id="v7" class="input-group" placeholder="تاريخ المذكرة" value="${data?data.v7||'':''}">
-                <textarea id="v5" class="input-group" style="height:100px;" placeholder="ملاحظات المذكرة...">${data?data.v5:''}</textarea>`;
-        }
-        document.getElementById('submit-btn').onclick = saveToCloud;
-    }
+    function checkLogin() { if(document.getElementById('login-pass').value === "2026") showScreen('main-screen'); else alert("خطأ"); }
+    function showScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+    function goHome() { editKey = null; showScreen('main-screen'); }
+    function showForm(type) { currentPath = type === 'ضبط جديد' ? 'records' : 'justice'; document.getElementById('form-title').innerText = type; showScreen('form-screen'); }
 
     function saveToCloud() {
-        const payload = {
-            v1: document.getElementById('v1').value, v2: document.getElementById('v2').value,
-            v3: document.getElementById('v3').value, v4: document.getElementById('v4').value,
-            v5: document.getElementById('v5').value,
-            v6: document.getElementById('v6') ? document.getElementById('v6').value : "",
-            v7: document.getElementById('v7') ? document.getElementById('v7').value : "",
-            ts: Date.now()
-        };
-        const ref = db.ref(currentPath);
-        const action = editKey ? ref.child(editKey).update(payload) : ref.push(payload);
-        action.then(() => { alert("تم الحفظ والمزامنة مع جميع الأجهزة"); goHome(); });
+        const data = { name: document.getElementById('f1').value, father: document.getElementById('f2').value, idNum: document.getElementById('f3').value, type: document.getElementById('f4').value, details: document.getElementById('f5').value, date: document.getElementById('f6').value };
+        if(editKey) db.ref(currentPath + '/' + editKey).set(data).then(() => { alert("تم التحديث ✅"); goHome(); });
+        else db.ref(currentPath).push(data).then(() => { alert("تم الحفظ ✅"); goHome(); });
     }
 
     function viewData(path) {
         currentPath = path;
+        document.getElementById('view-title').innerText = path === 'records' ? 'سجل الضبوط' : 'السجل العدلي';
         showScreen('view-screen');
-        document.getElementById('view-title').innerText = path === 'records' ? "سجل الضبوط" : "السجل العدلي";
-        db.ref(path).on('value', snap => {
-            dataCache = [];
-            snap.forEach(c => { dataCache.push({key: c.key, ...c.val()}); });
-            renderList(dataCache);
+        db.ref(path).on('value', (snapshot) => {
+            const data = snapshot.val(); dataCache = []; const list = document.getElementById('data-list'); list.innerHTML = "";
+            for(let key in data) {
+                const item = data[key]; item.key = key; dataCache.push(item);
+                const card = document.createElement('div'); card.className = 'record-card';
+                card.innerHTML = `<div class="edit-btn" onclick="editItem('${key}')">تعديل</div><b>الاسم:</b> ${item.name}<br><b>النوع:</b> ${item.type}<br><small>${item.date}</small>`;
+                list.appendChild(card);
+            }
         });
     }
 
-    function renderList(list) {
-        document.getElementById('data-list').innerHTML = list.reverse().map(item => `
-            <div class="record-card">
-                <button class="edit-btn" onclick="openForm('${currentPath}', ${JSON.stringify(item).replace(/"/g, '&quot;')}, '${item.key}')">تعديل</button>
-                <b>${item.v1} - رقم: ${item.v4 || item.v2}</b><br>
-                <small>${item.v6 ? 'نوع: '+item.v6 : ''} ${item.v7 ? '| تاريخ: '+item.v7 : ''}</small>
-                <p style="font-size:13px; color:#444; margin:5px 0;">${item.v5}</p>
-            </div>
-        `).join('');
+    function editItem(key) {
+        const item = dataCache.find(i => i.key === key); editKey = key; showForm(currentPath === 'records' ? 'ضبط جديد' : 'سجل عدلي');
+        setTimeout(() => { document.getElementById('f1').value = item.name; document.getElementById('f2').value = item.father; document.getElementById('f3').value = item.idNum; document.getElementById('f4').value = item.type; document.getElementById('f5').value = item.details; document.getElementById('f6').value = item.date; }, 100);
     }
 
     function liveSearch() {
         const term = document.getElementById('search-box').value.toLowerCase();
-        const filtered = dataCache.filter(i => Object.values(i).some(v => String(v).toLowerCase().includes(term)));
-        renderList(filtered);
+        const list = document.getElementById('data-list'); list.innerHTML = "";
+        dataCache.filter(i => i.name.toLowerCase().includes(term)).forEach(item => {
+            const card = document.createElement('div'); card.className = 'record-card';
+            card.innerHTML = `<div class="edit-btn" onclick="editItem('${item.key}')">تعديل</div><b>الاسم:</b> ${item.name}<br><b>النوع:</b> ${item.type}`;
+            list.appendChild(card);
+        });
     }
-
-    function showScreen(id) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        document.body.style.backgroundColor = (id==='main-screen'||id==='login-screen') ? "#000" : "var(--bg-grey)";
-    }
-    function goHome() { showScreen('main-screen'); }
-
-
 </script>
-    <script type="module">
-  // استدعاء مكتبات Firebase من الإنترنت مباشرة
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-  import { getDatabase, ref, push, set, onValue } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-database.js";
-
-  // إعدادات مشروعك الخاصة (Config)
-  const firebaseConfig = {
-    apiKey: "AIzaSyAuv0Uuq_nRbRMKcBp27TGEGfLC1p_tafU",
-    authDomain: "alghab-records.firebaseapp.com",
-    projectId: "alghab-records",
-    databaseURL: "https://alghab-records-default-rtdb.firebaseio.com",
-    storageBucket: "alghab-records.firebasestorage.app",
-    messagingSenderId: "730276364031",
-    appId: "1:730276364031:web:01460dd13b3ac0da6e96ca"
-  };
-
-  // تشغيل Firebase
-  const app = initializeApp(firebaseConfig);
-  const database = getDatabase(app);
-
-  // وظيفة إرسال البيانات للسحابة (الكلود)
-  window.saveToCloud = function(type) {
-    const recordsRef = ref(database, 'records');
-    const newRecordRef = push(recordsRef);
-    
-    set(newRecordRef, {
-      title: type,
-      time: new Date().toLocaleString('ar-SY'),
-      status: "نشط"
-    }).then(() => {
-      alert("تم الحفظ في الكلود بنجاح! ✅");
-    }).catch((error) => {
-      alert("خطأ: تأكد من تفعيل Rules في Firebase");
-    });
-  }
-
-  // كود لجلب البيانات وعرضها (اختياري)
-  const recordsRef = ref(database, 'records');
-  onValue(recordsRef, (snapshot) => {
-    const data = snapshot.val();
-    console.log("البيانات في السحابة:", data);
-  });
-</script>
-
 </body>
 </html>
